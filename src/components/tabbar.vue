@@ -8,12 +8,12 @@
       </mt-tab-item>
       <mt-tab-item id="publish">
         <!-- <img slot="icon" src="../assets/100x100.png"> -->
-        <i slot="icon">2</i>        
+        <i slot="icon">2</i>
         发布
       </mt-tab-item>
       <mt-tab-item id="message">
         <!-- <img slot="icon" src="../assets/100x100.png"> -->
-        <i slot="icon">3</i>        
+        <i slot="icon">3</i>
         消息
       </mt-tab-item>
       <mt-tab-item id="mine">
@@ -34,34 +34,16 @@ export default {
   },
   watch:{
     selected(newVal,oldVal) {
-      // switch(newVal) {
-      //   case 'home':
-      //     this.$router.push('home')
-      //     break;
-      //   case 'publish':
-      //     this.$router.push('publish')
-      //     break;
-      //   case 'message':
-      //     this.$router.push('message')    
-      //     break;
-      //   case 'mine':
-      //     if(!true){
-      //       this.$router.push('person')            
-      //     }else {
-      //       this.$router.push('mine')
-      //     }
-      //     break;
-      // }
       this.$router.push(newVal)
-      localStorage.setItem('navTabIndex',newVal);
+      localStorage.setItem('tabbarVal',newVal);
     },
-    
   },
   methods:{
     
   },
   mounted(){
-    let localData = localStorage.getItem('navTabIndex') || this.selected
+    console.log('111')
+    let localData = localStorage.getItem('tabbarVal') || this.selected
     this.selected = localData
   }
 }

@@ -100,6 +100,5 @@ $color:#26a2ff;
       font-size: .6rem;
     }
   }
-  
 }
 </style>

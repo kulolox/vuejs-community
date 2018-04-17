@@ -21,7 +21,9 @@
       <article class="article" v-html="data.content"></article>
     </div>
     <!-- 评论区 -->
-    <div class="replies"></div>
+    <ul class="replies" v-if="data.replies.length">
+      <li>{{data.replies.length}}条回复</li>
+    </ul>
   </div>
 </template>
 
