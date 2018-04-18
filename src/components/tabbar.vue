@@ -29,22 +29,23 @@
 export default {
   data() {
     return {
-      selected: 'home'
+      selected: ''
     }
   },
   watch:{
     selected(newVal,oldVal) {
+      if(newVal == 'person') {
+        this.$router.push('person')
+      }
       this.$router.push(newVal)
-      localStorage.setItem('tabbarVal',newVal);
-    },
+      localStorage.setItem('tabbarValue',newVal)
+    }
   },
   methods:{
     
   },
   mounted(){
-    console.log('111')
-    let localData = localStorage.getItem('tabbarVal') || this.selected
-    this.selected = localData
+    this.selected = localStorage.getItem('tabbarValue') || 'home'
   }
 }
 </script>

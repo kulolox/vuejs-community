@@ -21,10 +21,12 @@
         <p class="isData" v-if="isData">没有跟多数据了~</p>
       </section>
     </div>
+    <m-tabbar></m-tabbar>
   </div>
 </template>
 
 <script>
+import mTabbar from '@/components/tabbar'
 import mList from '@/components/list'
 export default {
   data() {
@@ -41,6 +43,7 @@ export default {
     }
   },
   components: {
+    mTabbar,
     mList
   },
   methods:{
@@ -67,7 +70,7 @@ export default {
   },
   watch:{
     chosed(newVal,oldVal) {
-      console.log(this.chosed)
+      // console.log(this.chosed)
       this.page = 1
       this.items = []
       this.isData = false
@@ -75,8 +78,6 @@ export default {
     }
   },
   mounted() {
-    //显示tabbar
-    this.$store.commit('onTabbar')
     this.initData()
   }
 }

@@ -18,10 +18,12 @@
         <mt-button type="primary" @click="logout">退出登录</mt-button>        
       </div>
     </div>
+    <m-tabbar></m-tabbar>
   </div>
 </template>
 
 <script>
+import mTabbar from '@/components/tabbar'
 import timeago from 'timeago'
 export default {
   data() {
@@ -30,6 +32,9 @@ export default {
       userData:{},
       AccessToken:''
     }
+  },
+  components: {
+    mTabbar
   },
   filters: {
     timeago(val) {
@@ -41,6 +46,7 @@ export default {
   methods:{
     logout() {
       localStorage.removeItem('accesstoken')
+      localStorage.removeItem('tabbarValue')
       this.$router.push('home')
     },
     initData() {

@@ -17,6 +17,10 @@ const routes = [
     component: Home
   },
   {
+    path:'/',
+    redirect:'/home'
+  },
+  {
     path: '/publish',
     name: 'publish',
     component: Publish

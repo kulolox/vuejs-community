@@ -8,15 +8,20 @@
       ></mt-field>
       <mt-button type="primary" @click="login">登录</mt-button>
     </div>
+    <m-tabbar></m-tabbar>
   </div>
 </template>
 
 <script>
+import mTabbar from '@/components/tabbar'
 export default {
   data() {
     return {
       AccessToken:''
     }
+  },
+  components: {
+    mTabbar
   },
   methods:{
     login() {
@@ -26,9 +31,9 @@ export default {
       .then(res => {
         // 将AccessToken存储在本地
         localStorage.setItem('accesstoken', this.AccessToken)
+        localStorage.setItem('tabbarValue','person')
         this.$router.push('person')
-      })
-      .catch(err => {
+      },err =>{
         this.$toast('AccessToken错误，请确认~')
       })
     }

@@ -13,17 +13,43 @@
         </h2>
         <div class="description">
           <span>发布于 {{data.create_at | timeago}}</span>
-          <span>作者 {{author}}</span>
+          <span>作者 {{author.loginname}}</span>
           <span>{{data.visit_count}} 次浏览</span>
-          <span>来自 {{data.tab}}</span>
+          <span>来自 {{data.tab | tab}}</span>
         </div>
       </header>
       <article class="article" v-html="data.content"></article>
+      <!-- 评论区 -->
+      <ul class="replies" v-if="replies.length">
+        <li>{{replies.length}}条回复:</li>
+        <li v-for="(replie,index) in replies" :key="index">
+          <section>
+            <div class="head">
+            <router-link
+            :to="{path:'/user'}"
+            :src="replie.author.avatar_url"
+            tag="img"
+            alt="user"
+            ></router-link>
+            <span class="name">{{replie.author.loginname}}</span>
+            <span class="timer">{{index+1}}楼 • {{replie.create_at | timeago}}</span>
+          </div>
+          <!-- 未登录下的点赞 -->
+          <div @click="openConfirm" v-if="!AccessToken">
+            <i>赞</i>
+            <span>{{replie.ups.length}}</span>
+          </div>
+          <!-- 登录下的点赞 -->
+          <div v-if="AccessToken">
+            <i>赞</i>
+            <span>{{replie.ups.length}}</span>
+            <i>回复</i>
+          </div>
+          </section>
+          <div class="body" v-html="replie.content"></div>
+        </li>
+      </ul>
     </div>
-    <!-- 评论区 -->
-    <ul class="replies" v-if="data.replies.length">
-      <li>{{data.replies.length}}条回复</li>
-    </ul>
   </div>
 </template>
 
@@ -33,12 +59,23 @@ export default {
   data() {
     return {
       data:{},
-      author:''
+      replies:[],
+      author:'',
+      AccessToken:''
     }
   },
   methods: {
     goBack() {
       this.$router.push('home')
+    },
+    // 未登录
+    openConfirm() {
+      this.$messagebox.confirm('您尚未登录，是否登录？').then(res => {
+        localStorage.setItem('tabbarValue','mine')
+        this.$router.push('mine')
+      },err => {
+        return
+      })
     },
     initData() {
       // 主题详情
@@ -46,9 +83,10 @@ export default {
       let that = this
       let url = 'https://www.vue-js.com/api/v1/topic/' + id
       this.$axios.get(url).then(res => {
-        console.log(res.data.data)
+        // console.log(res.data.data)
         this.data = res.data.data
-        this.author = res.data.data.author.loginname
+        this.replies = res.data.data.replies
+        this.author = res.data.data.author
       })
     }
   },
@@ -57,11 +95,19 @@ export default {
       let time = new Date(val)
       let thisTime = timeago()
       return thisTime.format(time, 'zh_CN') //将UTC时间转换格式---> 几天前,几小时前...
+    },
+    tab(val) {
+      if (val === 'share') {
+        return '分享'
+      } else if (val === 'ask') {
+        return '问答'
+      } else if (val === 'job') {
+        return '招聘'
+      }
     }
   },
   mounted() {
-    //隐藏tabbar
-    this.$store.commit('unTabbar')
+    this.AccessToken = localStorage.getItem('accesstoken') || ''
     this.initData()
   }
 }
@@ -157,6 +203,22 @@ $color:#26a2ff;
       border: 0;
     }
   }
-  
+  .replies {
+    overflow: hidden;
+    padding: 0 1rem;
+    li {
+      margin-top: 1.5rem;
+      .head {
+        img {
+          width: 3rem;
+          height: 3rem;
+          vertical-align: top;
+        }
+      }
+      .body {
+        margin-top: .5rem;
+      }
+    }
+  }
 }
 </style>
