@@ -39,10 +39,12 @@ export default {
     }
   },
   mounted() {
-    let accesstoken = localStorage.getItem('accesstoken')
-    if(accesstoken) {
+    this.AccessToken = localStorage.getItem('accesstoken')
+    if(this.AccessToken) {
+      localStorage.setItem('tabbarValue','person')      
       this.$router.push('person')
     }else {
+      localStorage.setItem('tabbarValue','mine')      
       this.$router.push('mine')
     }
   }

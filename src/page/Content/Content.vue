@@ -36,16 +36,16 @@
             </div>
             <!-- 未登录下的点赞 -->
             <div class="ups" @click="openConfirm" v-if="!AccessToken">
-              <i>赞</i>
+              <i class="iconfont icon-appreciatefill"></i>
               <span>{{replie.ups.length}}</span>
             </div>
             <!-- 登录下的点赞 -->
             <div class="ups" v-if="AccessToken">
               <div class="upsBtn" @click="ups(index)">
-                <i>赞</i>
+                <i class="iconfont icon-appreciatefill"></i>
                 <span>{{replie.ups.length}}</span>
               </div>
-              <i @click="openReplyOne(index)">回复</i>
+              <i @click="openReplyOne(index)" class="iconfont icon-edit"></i>
             </div>
           </section>
           <div class="body" v-html="replie.content"></div>
@@ -279,6 +279,9 @@ $color:#26a2ff;
   .replies {
     overflow: hidden;
     padding: 0 1rem;
+    .iconfont {
+      font-size: 1rem;
+    }
     li {
       margin-top: 1.5rem;
       section {

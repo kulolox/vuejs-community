@@ -19,15 +19,18 @@
         <input type="text" v-model="title" placeholder="标题字数10字以上">
       </div>
       <div class="text">
-        <textarea rows="10" placeholder="输入文本，支持markdown格式"></textarea>
+        <textarea rows="10" placeholder="输入文本，支持markdown格式"
+        v-model="text"
+        ></textarea>
       </div>
-      <mt-button type="primary">确认发布</mt-button>
+      <mt-button type="primary" @click="publish">确认发布</mt-button>
     </div>
     <m-tabbar></m-tabbar>
   </div>
 </template>
 
 <script>
+import marked from 'marked'
 import mTabbar from '@/components/tabbar'
 export default {
   data() {
@@ -36,6 +39,7 @@ export default {
       isTab: false,
       tab:'',
       title:'',
+      text:'',
       AccessToken:''
     }
   },
@@ -54,6 +58,38 @@ export default {
       list.flag = true
       this.tab = list.name
       this.isTab = false
+    },
+    //发布帖子
+    publish() {
+      let tabVal = ''
+      if(this.tab == '分享') {
+        tabVal = 'share'
+      }else if(this.tab == '问答') {
+        tabVal = 'ask'
+      }else if(this.tab == '招聘') {
+        tabVal = 'job'
+      }
+      this.text = marked(this.text)
+      
+      this.$axios.post('https://www.vue-js.com/api/v1/topics',{
+        accesstoken: this.AccessToken,
+        title: this.title,
+        tab: tabVal,
+        content: this.text
+      })
+      .then(res => {
+        this.tab = ''
+        this.title = ''
+        this.text = ''
+        this.$toast('帖子发布成功')
+        setTimeout(()=>{
+          localStorage.setItem('tabbarValue','home')
+          this.$router.push('home')
+        },1000)
+      })
+      .catch(err => {
+        this.$toast('帖子发布失败，请重新发送')
+      })
     },
     // 判断是否登录
     isLogin() {

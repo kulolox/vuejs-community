@@ -68,7 +68,7 @@ export default {
     }
   },
   mounted() {
-    this.AccessToken = localStorage.getItem('accesstoken')
+    this.AccessToken = localStorage.getItem('accesstoken') || ''
     this.initData()
   }
 }
