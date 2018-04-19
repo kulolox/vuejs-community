@@ -21,34 +21,47 @@
       <article class="article" v-html="data.content"></article>
       <!-- 评论区 -->
       <ul class="replies" v-if="replies.length">
-        <li>{{replies.length}}条回复:</li>
+        <li>{{replies.length}}条回复 :</li>
         <li v-for="(replie,index) in replies" :key="index">
           <section>
             <div class="head">
-            <router-link
-            :to="{path:'/user'}"
-            :src="replie.author.avatar_url"
-            tag="img"
-            alt="user"
-            ></router-link>
-            <span class="name">{{replie.author.loginname}}</span>
-            <span class="timer">{{index+1}}楼 • {{replie.create_at | timeago}}</span>
-          </div>
-          <!-- 未登录下的点赞 -->
-          <div @click="openConfirm" v-if="!AccessToken">
-            <i>赞</i>
-            <span>{{replie.ups.length}}</span>
-          </div>
-          <!-- 登录下的点赞 -->
-          <div v-if="AccessToken">
-            <i>赞</i>
-            <span>{{replie.ups.length}}</span>
-            <i>回复</i>
-          </div>
+              <router-link
+              :to="{path:'/user'}"
+              :src="replie.author.avatar_url"
+              tag="img"
+              alt="user"
+              ></router-link>
+              <span class="name">{{replie.author.loginname}}</span>
+              <span class="timer">{{index+1}}楼 • {{replie.create_at | timeago}}</span>
+            </div>
+            <!-- 未登录下的点赞 -->
+            <div class="ups" @click="openConfirm" v-if="!AccessToken">
+              <i>赞</i>
+              <span>{{replie.ups.length}}</span>
+            </div>
+            <!-- 登录下的点赞 -->
+            <div class="ups" v-if="AccessToken">
+              <div class="upsBtn" @click="ups(index)">
+                <i>赞</i>
+                <span>{{replie.ups.length}}</span>
+              </div>
+              <i @click="openReplyOne(index)">回复</i>
+            </div>
           </section>
           <div class="body" v-html="replie.content"></div>
+          <div class="reply" v-if="AccessToken" v-show="replie.isReply">
+            <textarea v-model="replyOneContent" placeholder="请输入回复内容..." rows="5"></textarea>
+            <div class="btn">
+              <mt-button size="small" type="default" @click="closeReplyOne(index)">取消</mt-button>
+              <mt-button size="small" type="primary" @click="subReplyOne(index)">确认</mt-button>
+            </div>
+          </div>
         </li>
       </ul>
+      <div class="replyAll" v-if="AccessToken">
+        <textarea v-model="replyAllContent" placeholder="请输入回复内容..." rows="5"></textarea>
+          <mt-button type="primary" @click="subReplyAll">确认</mt-button>
+      </div>
     </div>
   </div>
 </template>
@@ -61,7 +74,9 @@ export default {
       data:{},
       replies:[],
       author:'',
-      AccessToken:''
+      AccessToken:'',
+      replyOneContent:'',
+      replyAllContent:''
     }
   },
   methods: {
@@ -77,6 +92,64 @@ export default {
         return
       })
     },
+    //登录
+    // 点赞功能(社区自行判定用户是否点赞，未赞+1，赞-1，且不能自己点赞)
+    ups(index) {
+      let reply_id = this.replies[index].id
+      this.$axios.post('https://www.vue-js.com/api/v1/reply/' + reply_id + '/ups',{
+        accesstoken: this.AccessToken
+      })
+      .then(res => {
+        this.initData()
+      })
+    },
+    //对评论进行回复
+    openReplyOne(index) {
+      let arr = this.replies
+      //为replies数组添加flag
+      arr.map((item,i) => {
+        index === i ? this.$set(item,'isReply',true) : this.$set(item,'isReply',false)
+      })
+      this.replyOneContent = '@' + this.replies[index].author.loginname + ''
+    },
+    closeReplyOne(index) {
+      this.replyOneContent = ''
+      let arr = this.replies
+      arr[index].isReply = false
+      this.$set(arr,index,arr[index])
+    },
+    subReplyOne(index){
+      let id = this.$route.query.id
+      this.$axios.post('https://www.vue-js.com/api/v1/topic/' + id + '/replies',{
+        accesstoken: this.AccessToken,
+        content: this.replyOneContent,
+        reply_id: this.replies[index].id
+      })
+      .then(res =>{
+        this.$toast('回复成功')
+        this.closeReplyOne(index)
+        this.initData()
+      })
+      .catch(err => {
+        this.$toast('请输入回复内容...')
+      })
+    },
+    //对帖子进行回复
+    subReplyAll() {
+      let id = this.$route.query.id
+      this.$axios.post('https://www.vue-js.com/api/v1/topic/' + id + '/replies',{
+        accesstoken: this.AccessToken,
+        content: this.replyAllContent
+      })
+      .then(res => {
+        this.$toast('回复成功')
+        this.replyAllContent = ''
+        this.initData()
+      })
+      .catch(function(error) {
+        this.$toast('请输入回复内容...')
+      })
+    },
     initData() {
       // 主题详情
       let id = this.$route.query.id
@@ -85,7 +158,7 @@ export default {
       this.$axios.get(url).then(res => {
         // console.log(res.data.data)
         this.data = res.data.data
-        this.replies = res.data.data.replies
+        this.replies = res.data.data.replies.reverse()
         this.author = res.data.data.author
       })
     }
@@ -208,16 +281,59 @@ $color:#26a2ff;
     padding: 0 1rem;
     li {
       margin-top: 1.5rem;
+      section {
+        display: flex;
+        justify-content: space-between;
+      }
       .head {
+        font-size: .8rem;
         img {
           width: 3rem;
           height: 3rem;
           vertical-align: top;
+          margin-right: .5rem;
         }
       }
-      .body {
-        margin-top: .5rem;
+      .ups {
+        width: 4rem;
+        display: flex;
+        justify-content: space-around;
+        color:$color;
+        font-size: .8rem;
       }
+      .body {
+        margin-top: 1rem;
+        font-size: .9rem;
+        padding: .3rem;
+        background-color: #ddd;
+      }
+      .reply {
+        width: 100%;
+        textarea {
+          width: 100%;
+        }
+        .btn {
+          display: flex;
+          .mint-button--default {
+            background-color: #ccc;
+          }
+          button {
+            width: 50%;
+            border-radius: 0;
+          }
+        }
+      }
+    }
+  }
+  .replyAll {
+    width: 100%;
+    padding: 1rem;
+    textarea {
+      width: 100%;
+    }
+    button {
+      width: 100%;
+      border-radius: 0;
     }
   }
 }
