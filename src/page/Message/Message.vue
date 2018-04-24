@@ -27,19 +27,28 @@ export default {
   data() {
     return {
       AccessToken:'',
-      active:'notRead'
-      
+      active:'notRead',
+      hasnot_read_message:[],
+      has_read_message:[]
     }
   },
   components: {
     mTabbar
   },
   methods: {
+    initData() {
+      this.$axios.get('https://www.vue-js.com/api/v1/messages?accesstoken=' + this.AccessToken)
+      .then(res => {
+        console.log(res)
+        this.hasnot_read_message = res.data.data.hasnot_read_message
+        this.has_read_message = res.data.data.has_read_message
+      })
+    },
     // 判断是否登录
     isLogin() {
       this.AccessToken = localStorage.getItem('accesstoken')
       if(this.AccessToken) {
-        return
+        this.initData()
       }else {
         this.$messagebox.confirm('您尚未登录，是否登录？').then(action => {
           localStorage.setItem('tabbarValue','mine')

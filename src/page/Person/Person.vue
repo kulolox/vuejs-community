@@ -47,6 +47,7 @@ export default {
     logout() {
       localStorage.removeItem('accesstoken')
       localStorage.removeItem('tabbarValue')
+      localStorage.removeItem('loginname')      
       this.$router.push('home')
     },
     initData() {
@@ -55,6 +56,7 @@ export default {
       })
       .then(res => {
         // console.log(res)
+        localStorage.setItem('loginname',res.data.loginname)
         this.user = res.data
         this.getUserData()
       })
@@ -62,7 +64,7 @@ export default {
     getUserData() {
       this.$axios.get('https://www.vue-js.com/api/v1/user/' + this.user.loginname)
       .then(res => {
-        console.log(res)
+        // console.log(res)
         this.userData = res.data.data
       })
     }

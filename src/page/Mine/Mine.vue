@@ -31,6 +31,7 @@ export default {
       .then(res => {
         // 将AccessToken存储在本地
         localStorage.setItem('accesstoken', this.AccessToken)
+        // localStorage.setItem('loginname', this.AccessToken)      
         localStorage.setItem('tabbarValue','person')
         this.$router.push('person')
       },err =>{

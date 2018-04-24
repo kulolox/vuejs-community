@@ -11,6 +11,17 @@
           <span class="tag" v-else-if="data.good">精华</span>
           {{data.title}}
         </h2>
+        <div v-if="AccessToken">
+          <div v-show="!isCollected"  class="collection" @click="onCollect">
+            <i class="iconfont icon-like"></i>
+            收藏主题
+          </div>
+          <div v-show="isCollected" class="collection" @click="offCollect">
+            <i class="iconfont icon-likefill"></i>          
+            取消收藏
+          </div>
+        </div>
+        
         <div class="description">
           <span>发布于 {{data.create_at | timeago}}</span>
           <span>作者 {{author.loginname}}</span>
@@ -73,10 +84,12 @@ export default {
     return {
       data:{},
       replies:[],
+      isCollected:false,
       author:'',
       AccessToken:'',
       replyOneContent:'',
-      replyAllContent:''
+      replyAllContent:'',
+      loginname:''
     }
   },
   methods: {
@@ -93,6 +106,39 @@ export default {
       })
     },
     //登录
+    // 收藏功能
+    isCollect() {
+      this.$axios.get('https://www.vue-js.com/api/v1/user/' + this.loginname)
+      .then(res => {
+        let arr = res.data.data.collect_topics //获取我的收藏列表
+        let collect_id = this.data.id //本主题的id
+        arr.find(item => {
+          if(item.id === collect_id) {
+            this.isCollected = true
+          }
+        })
+      })
+    },
+    // 收藏
+    onCollect() {
+      this.$axios.post('https://www.vue-js.com/api/v1/topic/collect',{
+        accesstoken: this.AccessToken,
+        topic_id: this.data.id
+      })
+      .then(res => {
+        this.isCollected = !this.isCollected
+      })
+    },
+    // 取消收藏
+    offCollect() {
+      this.$axios.post('https://www.vue-js.com/api/v1/topic/de_collect',{
+        accesstoken: this.AccessToken,
+        topic_id: this.data.id
+      })
+      .then(res => {
+        this.isCollected = !this.isCollected
+      })
+    },
     // 点赞功能(社区自行判定用户是否点赞，未赞+1，赞-1，且不能自己点赞)
     ups(index) {
       let reply_id = this.replies[index].id
@@ -161,6 +207,11 @@ export default {
         this.replies = res.data.data.replies.reverse()
         this.author = res.data.data.author
       })
+      if(this.AccessToken) {
+        this.loginname = localStorage.getItem('loginname')
+        this.isCollect()
+        // console.log(this.loginname)
+      }
     }
   },
   filters: {
@@ -200,6 +251,14 @@ $color:#26a2ff;
   header {
     padding: .3rem;
     border-bottom: 1px solid $color;
+    .collection {
+      margin-top: .5rem;
+      padding-left: .7rem;
+      color:$color;
+      i {
+        font-size: 1rem;
+      }
+    }
     h2 {
       font-weight: 700;
       font-size: 1.2rem;
@@ -212,7 +271,7 @@ $color:#26a2ff;
       border-radius: 0.2rem;
     }
     .description {
-      margin: 1.2rem 0 .5rem;
+      margin: .5rem 0 .5rem;
       display: flex;
       justify-content: space-around;
       span {
