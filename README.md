@@ -1,6 +1,14 @@
-# vuejs-community
+# vue-shequ
 
 > A Vue.js project
+>
+>vuejs中文社区demo,技术栈,vue,vue-router,mintUI,axios等
+>
+>项目预览地址为[vuejs社区Appdemo](https://kulolox.github.io/vuejs-community/dist/#/home)，请使用chrome手机模式预览
+>
+>需要登录的小伙伴，可注册vuejs社区，登录社区后在设置里找到自己的Access Token，复制过来就可以了。
+>
+>该项目学习自[vuejs社区hellomimi](https://www.vue-js.com/topic/590d99714d2e582056ec6c0f)
 
 ## Build Setup
 
