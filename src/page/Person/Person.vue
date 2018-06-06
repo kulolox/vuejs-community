@@ -12,7 +12,42 @@
         </div>
       </header>
       <div class="collect">
-        xxx
+        <div class="cList">
+          <p @click="(open(0))">发布主题
+            <i v-if="!isOpen0" class="iconfont icon-unfold"></i>
+            <i v-if="isOpen0" class="iconfont icon-fold"></i>          
+          </p>
+          <ul v-if="isOpen0" class="recent-topics">
+            <router-link tag="li" :to="{path:'/content',query:{id:item.id}}"
+            v-for="(item,index) in recent_topics" :key="index">
+              {{item.title}}
+            </router-link>
+          </ul>
+        </div>
+        <div class="cList">
+          <p @click="open(1)">回复主题
+            <i v-if="!isOpen1" class="iconfont icon-unfold"></i>
+            <i v-if="isOpen1" class="iconfont icon-fold"></i>
+          </p>
+          <ul v-if="isOpen1" class="recent-topics">
+            <router-link tag="li" :to="{path:'/content',query:{id:item.id}}"
+            v-for="(item,index) in recent_replies" :key="index">
+              {{item.title}}
+            </router-link>
+          </ul>
+        </div>
+        <div class="cList">
+          <p @click="open(2)">收藏主题
+            <i v-if="!isOpen2" class="iconfont icon-unfold"></i>
+            <i v-if="isOpen2" class="iconfont icon-fold"></i>
+          </p>
+          <ul v-if="isOpen2" class="recent-topics">
+            <router-link tag="li" :to="{path:'/content',query:{id:item.id}}"
+            v-for="(item,index) in collect_topics" :key="index">
+              {{item.title}}
+            </router-link>
+          </ul>
+        </div>
       </div>
       <div class="logout">
         <mt-button type="primary" @click="logout">退出登录</mt-button>        
@@ -28,8 +63,14 @@ import timeago from 'timeago'
 export default {
   data() {
     return {
-      user:{},
-      userData:{},
+      user:'',
+      userData:'',
+      recent_replies:'',
+      recent_topics:'',
+      collect_topics:'',
+      isOpen0:false,
+      isOpen1:false,
+      isOpen2:false,
       AccessToken:''
     }
   },
@@ -44,6 +85,15 @@ export default {
     }
   },
   methods:{
+    open(i) {
+      if(i == 0) {
+        this.isOpen0 = !this.isOpen0
+      }else if(i == 1) {
+        this.isOpen1 = !this.isOpen1
+      }else if(i == 2) {
+        this.isOpen2 = !this.isOpen2
+      }
+    },
     logout() {
       localStorage.removeItem('accesstoken')
       localStorage.removeItem('tabbarValue')
@@ -55,6 +105,7 @@ export default {
         accesstoken: this.AccessToken
       })
       .then(res => {
+        // 获取个人信息
         // console.log(res)
         localStorage.setItem('loginname',res.data.loginname)
         this.user = res.data
@@ -66,6 +117,9 @@ export default {
       .then(res => {
         // console.log(res)
         this.userData = res.data.data
+        this.recent_topics = res.data.data.recent_topics
+        this.recent_replies = res.data.data.recent_replies
+        this.collect_topics = res.data.data.collect_topics
       })
     }
   },
@@ -115,9 +169,31 @@ $color:#26a2ff;
       }
     }
   }
+  .collect {
+    overflow: auto;
+    max-height: 12rem;
+    border-bottom: 1px solid $color;
+    .cList {
+      p {
+        color: $color;
+        padding: .5rem 0;
+        overflow: hidden;
+        i {
+          float: right;
+        }
+      }
+      ul {
+        li {
+          color: $color;
+          padding: .5rem 0 .5rem 1rem;
+        }
+      }
+      padding: 0 1rem;
+    }
+  }
   .logout {
     position: absolute;
-    bottom: 3.5rem;
+    bottom: 4.5rem;
     width: 100%;
     padding: 0 1rem;
     button {

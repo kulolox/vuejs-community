@@ -19,8 +19,8 @@
               <p>{{item.title}}</p>
             </div>
             <div class="timer">
-                <span>{{item.reply_count}} / {{item.visit_count}}</span>
-                <span>{{item.last_reply_at | timeago}}</span>
+              <span>{{item.reply_count}} / {{item.visit_count}}</span>
+              <span>{{item.last_reply_at | timeago}}</span>
             </div>
           </router-link>
         </section>

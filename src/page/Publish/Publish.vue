@@ -9,8 +9,7 @@
         <ul class="lists" v-show="isTab">
           <li v-for="(list,index) in lists" :key="index"
           @click="choseTab(list)"
-          :class="{'selected':list.flag}"
-          >
+          :class="{'selected':list.flag}">
             {{list.name}}
           </li>
         </ul>
@@ -114,7 +113,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$color:#26a2ff;
+$color:#000;
 .mint-header {
   height: 2.5rem;
   font-size: .8rem;
@@ -129,16 +128,17 @@ $color:#26a2ff;
     width: 100%;
     margin: 1rem 0;
     input {
-      padding-left: 1rem; 
+      padding: .5rem 0 .5rem 1rem; 
       width: 100%;
+      border:none;
       color: $color;
+      background-color: #f3f3f3;
     }
     ul {
       position: absolute;
       width: 100%;
       z-index: 10;
       border: 1px solid #ccc;
-      border-top: none;
       background-color: #f3f3f3;
       li {
         padding: .2rem 0 0.2rem 1rem;
@@ -152,14 +152,20 @@ $color:#26a2ff;
     margin-top: 2rem;
     input {
       width: 100%;
-      padding-left: 1rem;
+      padding: .5rem 0 .5rem 1rem; 
+      border:none;
       color: $color;
+      background-color: #f3f3f3;
     }
   }
   .text {
-    margin-top: 4rem;
+    margin-top: 3rem;
     textarea {
       width: 100%;
+      padding: .5rem 0 .5rem 1rem; 
+      border:none;
+      color: $color;
+      background-color: #f3f3f3;
     }
   }
   button {
